@@ -28,8 +28,8 @@ export class LightController extends Controller {
 
       useAttr = attr;
       switch(attr) {
-        case LightAttributes.COLOR_TEMP:
-          if (!supported.includes('color_temp')) {
+        case LightAttributes.COLOR_TEMP_KELVIN:
+          if (!supported.includes('COLOR_TEMP_KELVIN')) {
             useAttr = LightAttributes.BRIGHTNESS_PCT;
           }
           break;
@@ -58,8 +58,8 @@ export class LightController extends Controller {
     }
     const attr = this.stateObj.attributes;
     switch(this.attribute) {
-      case LightAttributes.COLOR_TEMP:
-        return attr.color_temp ? Math.round(attr.color_temp) : this.min;
+      case LightAttributes.COLOR_TEMP_KELVIN:
+        return attr.COLOR_TEMP_KELVIN ? Math.round(attr.COLOR_TEMP_KELVIN) : this.min;
       case LightAttributes.BRIGHTNESS:
         return Math.round(attr.brightness);
       case LightAttributes.BRIGHTNESS_PCT:
@@ -116,8 +116,8 @@ export class LightController extends Controller {
           [attr]: value
         }
         break;
-      case LightAttributes.COLOR_TEMP:
-        attr = 'color_temp';
+      case LightAttributes.COLOR_TEMP_KELVIN:
+        attr = 'COLOR_TEMP_KELVIN';
         service = 'turn_on';
         data = {
           ...data,
@@ -133,7 +133,7 @@ export class LightController extends Controller {
 
   get _min(): number {
     switch(this.attribute) {
-      case LightAttributes.COLOR_TEMP:
+      case LightAttributes.COLOR_TEMP_KELVIN:
         return this.stateObj ? this.stateObj.attributes?.min_mireds ? this.stateObj.attributes.min_mireds : 153 : 153;
       default:
         return 0;
@@ -142,7 +142,7 @@ export class LightController extends Controller {
 
   get _max(): number {
     switch(this.attribute) {
-      case LightAttributes.COLOR_TEMP:
+      case LightAttributes.COLOR_TEMP_KELVIN:
         return this.stateObj ? this.stateObj.attributes?.max_mireds ? this.stateObj.attributes.max_mireds : 500 : 500;
       case LightAttributes.BRIGHTNESS:
         return 255;
@@ -157,7 +157,7 @@ export class LightController extends Controller {
 
   get isValuePercentage(): boolean {
     switch(this.attribute) {
-      case LightAttributes.COLOR_TEMP:
+      case LightAttributes.COLOR_TEMP_KELVIN:
       case LightAttributes.HUE:
       case LightAttributes.BRIGHTNESS:
         return false;
@@ -168,7 +168,7 @@ export class LightController extends Controller {
 
   get isOff(): boolean {
     switch(this.attribute) {
-      case LightAttributes.COLOR_TEMP:
+      case LightAttributes.COLOR_TEMP_KELVIN:
       case LightAttributes.HUE:
       case LightAttributes.SATURATION:
       case LightAttributes.BRIGHTNESS:
@@ -189,7 +189,7 @@ export class LightController extends Controller {
     switch(this.attribute) {
       case LightAttributes.ON_OFF:
         return this._hass.localize('component.light.state._.on');
-      case LightAttributes.COLOR_TEMP:
+      case LightAttributes.COLOR_TEMP_KELVIN:
       case LightAttributes.BRIGHTNESS:
         return `${this.targetValue}`;
       case LightAttributes.BRIGHTNESS_PCT:
@@ -228,8 +228,8 @@ export class LightController extends Controller {
         return !!('supported_features' in this.stateObj.attributes &&
           this.stateObj?.attributes?.supported_features & 1);
 
-      case LightAttributes.COLOR_TEMP:
-        if ('color_temp' in this.stateObj.attributes) {
+      case LightAttributes.COLOR_TEMP_KELVIN:
+        if ('COLOR_TEMP_KELVIN' in this.stateObj.attributes) {
           return true;
         }
         return !!('supported_features' in this.stateObj.attributes &&
@@ -251,7 +251,7 @@ export class LightController extends Controller {
   get sliderColor(): string {
     let returnColor = 'inherit';
     if (this._config.slider?.use_state_color) {
-      if (this.stateObj.attributes.hs_color && this.attribute !== LightAttributes.COLOR_TEMP) {
+      if (this.stateObj.attributes.hs_color && this.attribute !== LightAttributes.COLOR_TEMP_KELVIN) {
         const [hue, sat] = this.stateObj.attributes.hs_color;
         let useHue = hue;
         let useSat = sat;
@@ -285,17 +285,17 @@ export class LightController extends Controller {
           this._sliderPrevColor = returnColor;
         }
       } else if (
-        this.stateObj.attributes.color_temp &&
+        this.stateObj.attributes.COLOR_TEMP_KELVIN &&
         this.stateObj.attributes.min_mireds &&
         this.stateObj.attributes.max_mireds
       ) {
         returnColor = getLightColorBasedOnTemperature(
-          this.attribute === LightAttributes.COLOR_TEMP ? this.valueFromPercentage : this.stateObj.attributes.color_temp,
+          this.attribute === LightAttributes.COLOR_TEMP_KELVIN ? this.valueFromPercentage : this.stateObj.attributes.COLOR_TEMP_KELVIN,
           this.stateObj.attributes.min_mireds,
           this.stateObj.attributes.max_mireds
         );
         this._sliderPrevColor = returnColor;
-      } else if (this.attribute === LightAttributes.COLOR_TEMP) {
+      } else if (this.attribute === LightAttributes.COLOR_TEMP_KELVIN) {
         returnColor = getLightColorBasedOnTemperature(
           this.valueFromPercentage,
           153,
