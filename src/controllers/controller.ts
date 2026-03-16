@@ -215,12 +215,12 @@ export abstract class Controller {
           return color;
         }
       } else  if (
-        this.stateObj.attributes.color_temp &&
+        this.stateObj.attributes.color_temp_kelvin &&
         this.stateObj.attributes.min_mireds &&
         this.stateObj.attributes.max_mireds
       ) {
         const color = getLightColorBasedOnTemperature(
-          this.stateObj.attributes.color_temp,
+          this.stateObj.attributes.color_temp_kelvin,
           this.stateObj.attributes.min_mireds,
           this.stateObj.attributes.max_mireds,
         );
